@@ -23,8 +23,15 @@ Se è legit la soluzione che otteniamo allora andiamo ad applicare l'azione.
 Per l'intorno 2 (swap) scambiare solo l'item più grande con quello più piccolo e così via. In modo da evitare la maggior parte dei confronti inutili
 (per complessità).
 
+###Struttura Dati
+I bin verranno rappresentati con una lista (pro: facile iterare e scambiare elem), dall'esterno faremo in modo da rispettare i vincoli di colore e dimensione del bin.
+gli item all'interno dei bin verranno a loro volta rappresentati con una lista `[indice, peso, colore]`
+
 ##How-To
 Il file `color_generator.py` prende in input 3 parametri:
 1) percentuale di numeri negativi (nero)
 2) input file (es `instances/Falkenauer_u120_00.txt`)
 3) output file: file con pesi e colori aggiunti secondo una distribuzione di probabilità data dal primo argomento (es `instances/Falkenauer_u120_00_colored.txt`)
+
+Il file `colored_bin_packing.py` è quello che fa le magie attraverso un algoritmo BSA, prende un solo parametro in input
+1) input file (es `instances/Falkenauer_u120_00_colored.txt`)
