@@ -9,8 +9,6 @@ Il problema su cui abbiamo scelto di applicare un algoritmo BSA è quello del co
 I files all'interno della cartella `instances` sono le istanze su cui andiamo a eseguire l'algoritmo da noi sviluppato.
 Attualmente i file consistono nel numero di item rappresentati dal numero di righe del file, ogni numero per ogni riga indica il peso dell'item all'interno del bin.
 I bin hanno una dimensione di 150.
-A questi files andrà aggiunto un colore.
-Per fare ciò verrà sviluppato un programma che genererà in modo randomico i colori e andrà ad assegnarli alle varie istanze
 
 ##Intorni
 * Intorno **N1**: Prendere un bin (con meno elementi o che contiene elem più piccoli) e cercare di sistemare i sui item negli altri bin.
@@ -24,3 +22,9 @@ Se è legit la soluzione che otteniamo allora andiamo ad applicare l'azione.
 
 Per l'intorno 2 (swap) scambiare solo l'item più grande con quello più piccolo e così via. In modo da evitare la maggior parte dei confronti inutili
 (per complessità).
+
+##How-To
+Il file `color_generator.py` prende in input 3 parametri:
+1) percentuale di numeri negativi (nero)
+2) input file (es `instances/Falkenauer_u120_00.txt`)
+3) output file: file con pesi e colori aggiunti secondo una distribuzione di probabilità data dal primo argomento (es `instances/Falkenauer_u120_00_colored.txt`)
