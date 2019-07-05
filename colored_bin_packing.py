@@ -9,6 +9,27 @@ def main():
     bins = assign_bin_2(item_list)
 
 
+def n1_lighter(bins):  # takes the bin which is lighter and tries to eliminate it
+    min_weight = bins_weight
+    index_min_bin = 0
+    for i, bin in enumerate(bins):
+        temp_weight = 0
+        for item in bin:
+            temp_weight += item[1]  # sum of the weight in a bin
+        if temp_weight < min_weight:
+            min_weight = temp_weight
+            index_min_bin = i
+
+    # FINIRE QUI
+    for bin in bins:  # per cercare lo spazio minimo in cui ci sta un item del bin che vogliamo togliere
+        bin_weight = sum(item[1] for item in bin)  # matrice con pesi per non rifare (?)
+        for min_items in bins[index_min_bin]:
+            print(min_items)
+
+
+    return bins
+
+
 def infer_file(instance_file):  # read input file and return a list of items
     input_file = open(instance_file, "r")
     item_list = []  # each element describes an item [item, weight, color]
