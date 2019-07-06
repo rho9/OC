@@ -29,7 +29,8 @@ def n1_lighter(bins, available_space):  # takes the bin which is lighter and tri
             for j in range(len(bins)):  # bins in which we try to place the items
                 if i != j:  # check if the two bins are both the same
                     for k, item in enumerate(bins_copy[i]):  # select item to remove
-                        if item[1] <= available_space_copy[j]:  # check if the item can be fit in the new bin
+                        # check if the item can be fit in the new bin and check if the color of the previous item is different
+                        if item[1] <= available_space_copy[j] and item[2] != bins_copy[j][len(bins_copy[j])-1][2]:
                             bins_copy[j].append(item)
                             available_space_copy[j] -= item[1]
                             available_space_copy[i] += item[1]
@@ -82,9 +83,11 @@ def assign_bin_2(item_list):
     for item in item_list:
         if item[1] <= bins_weight:
             if item[1] <= bin_weight:
-                bins[i].append(item)
-                bin_weight -= item[1]
-                weights[i] = bin_weight
+                # check if it's the first item or the previous one has a different color
+                if bins[i] == [] or item[2] != bins[i][len(bins[i])-1][2]:
+                    bins[i].append(item)
+                    bin_weight -= item[1]
+                    weights[i] = bin_weight
             else:
                 i += 1  # go to the next bin
                 bin_weight = bins_weight
