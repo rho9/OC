@@ -5,29 +5,56 @@ bins_weight = 150
 def main():
     instance_file = sys.argv[1]
     item_list = infer_file(instance_file)
-    bins = assign_bin_1(item_list)
-    bins = assign_bin_2(item_list)
+    bins_1, available_space_1 = assign_bin_1(item_list)
+    bins_2, available_space_2 = assign_bin_2(item_list)
+
+    bins_old = bins_1.copy()
+    bins_new = None
+    available_space_old = available_space_1.copy()
+    available_space_new = None
+    while bins_old != bins_new:
+        if bins_new:
+            bins_old = bins_new.copy()
+            available_space_old = available_space_new.copy()
+        else:
+            bins_old = bins_1.copy()
+            available_space_old = available_space_1.copy()
+
+        bins_new, available_space_new = n1_lighter(bins_old, available_space_old)
+
+    print("roba")
 
 
-def n1_lighter(bins):  # takes the bin which is lighter and tries to eliminate it
-    min_weight = bins_weight
-    index_min_bin = 0
-    for i, bin in enumerate(bins):
-        temp_weight = 0
-        for item in bin:
-            temp_weight += item[1]  # sum of the weight in a bin
-        if temp_weight < min_weight:
-            min_weight = temp_weight
-            index_min_bin = i
+def n1_lighter(bins, available_space):  # takes the bin which is lighter and tries to eliminate it
+    bins.sort(key=sum_bin_weight)
+    available_space.sort(reverse=True)
+    bins_copy = bins.copy()
+    available_space_copy = available_space.copy()
+    for i in range(len(bins)):  # select bin to eliminate
+        suitable = True  # bin_to_eliminate can't be emptied
+        while bins_copy[i] and suitable:  # until bin is not empty
+            for j in range(len(bins)):  # bins in which we try to place the items
+                for k, item in enumerate(bins_copy[i]):  # select item to remove
+                    if i != j and item[1] <= available_space[j]:  # check if the two bins are both the same and if the item can be fit in the new bin
+                        bins_copy[j].append(item)
+                        available_space_copy[j] -= item[1]
+                        available_space_copy[i] += item[1]
+                        bins_copy[i].pop(k)  # remove the item in the old bin
+                if not bins_copy[i]:
+                    break
+            if bins_copy[i]:  # it was not possible to empty bin_to_eliminate
+                suitable = False
+                bins_copy = bins.copy()  # reset the initial bin
+                available_space_copy = available_space.copy()
+            else:
+                bins_copy.pop(i)
+                available_space_copy.pop(i)
+                return bins_copy, available_space_copy
+    return bins, available_space
 
-    # FINIRE QUI
-    for bin in bins:  # per cercare lo spazio minimo in cui ci sta un item del bin che vogliamo togliere
-        bin_weight = sum(item[1] for item in bin)  # matrice con pesi per non rifare (?)
-        for min_items in bins[index_min_bin]:
-            print(min_items)
 
-
-    return bins
+def sum_bin_weight(bin):
+    return sum(item[1] for item in bin)
 
 
 def infer_file(instance_file):  # read input file and return a list of items
@@ -44,15 +71,18 @@ def infer_file(instance_file):  # read input file and return a list of items
 # assign items to bins in a dumb way (one item for each bin)
 def assign_bin_1(item_list):
     bins = []  # bins are being represented as a list
+    weights = []
     for item in item_list:
         if item[1] <= bins_weight:
             bins.append([item])  # add one bin
-    return bins
+            weights.append(bins_weight - item[1])  # add the weight of the bin
+    return bins, weights
 
 
 # assign items to bins in a smarter way (fills a bin, before going to next one)
 def assign_bin_2(item_list):
     bins = [[]]  # bins are being represented as a list
+    weights = ['']
     i = 0
     bin_weight = bins_weight
     for item in item_list:
@@ -60,13 +90,16 @@ def assign_bin_2(item_list):
             if item[1] <= bin_weight:
                 bins[i].append(item)
                 bin_weight -= item[1]
+                weights[i] = bin_weight
             else:
                 i += 1  # go to the next bin
                 bin_weight = bins_weight
                 bins.append([])
                 bins[i].append(item)
                 bin_weight -= item[1]
-    return bins
+                weights.append([])
+                weights[i] = bin_weight
+    return bins, weights
 
 
 if __name__ == '__main__':
