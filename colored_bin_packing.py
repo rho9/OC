@@ -1,5 +1,6 @@
 import sys
 import copy
+import math
 bins_weight = 150
 
 
@@ -8,6 +9,7 @@ def main():
     item_list = infer_file(instance_file)
     bins_1, available_space_1 = assign_bin_1(item_list)
     bins_2, available_space_2 = assign_bin_2(item_list)
+    n2(bins_2, available_space_2)
 
     for i in range(len(bins_1)):
         bins_new, available_space_new = n1_lighter(bins_1, available_space_1)
@@ -16,6 +18,29 @@ def main():
 
     for i, bin in enumerate(bins_new):
         print(sum(item[1] for item in bin)+available_space_new[i])
+
+
+def n2(bins, available_space):
+    bins.sort(key=sum_bin_weight)  # MAYBE ONLY FIST TIME -> WILL BRING TO THE STARTING POSITION
+    available_space.sort(reverse=True)
+    for i in range(math.ceil(len(bins)/2)):
+        j = len(bins)-i -1  # reverse index (starting from bottom)
+        item_1 = bins[i][len(bins[i])-1]
+        color_1 = item_1[2]
+        weight_1 = item_1[1]
+        item_2 = bins[j][len(bins[j])-1]
+        color_2 = item_2[2]
+        weight_2 = item_2[1]
+        if color_1 == color_2:
+            if weight_1 <= (available_space[j] + weight_2) and weight_2 <= (available_space[i] + weight_1):
+                tmp_1 = bins[i].pop(len(bins[i])-1)  # pop the item_1
+                tmp_2 = bins[j].pop(len(bins[j])-1)  # pop the item_2
+                bins[i].append(tmp_2)
+                bins[j].append(tmp_1)
+                available_space[i] += (weight_1 - weight_2)
+                available_space[j] += (weight_2 - weight_1)
+                #IMPLEMENT TABOO LIST
+                break
 
 
 def n1_lighter(bins, available_space):  # takes the bin which is lighter and tries to eliminate it
