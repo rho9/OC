@@ -7,11 +7,15 @@ def main():
     instance_file = sys.argv[1]
     item_list = infer_file(instance_file)
     bins_1, available_space_1 = assign_bin_1(item_list)
-    #bins_2, available_space_2 = assign_bin_2(item_list)
+    bins_2, available_space_2 = assign_bin_2(item_list)
 
-    bins_new, available_space_new = n1_lighter(bins_1, available_space_1)
+    for i in range(len(bins_1)):
+        bins_new, available_space_new = n1_lighter(bins_1, available_space_1)
+        bins_1 = copy.deepcopy(bins_new)
+        available_space_1 = copy.deepcopy(available_space_new)
 
-    print("roba")
+    for i, bin in enumerate(bins_new):
+        print(sum(item[1] for item in bin)+available_space_new[i])
 
 
 def n1_lighter(bins, available_space):  # takes the bin which is lighter and tries to eliminate it
@@ -25,7 +29,7 @@ def n1_lighter(bins, available_space):  # takes the bin which is lighter and tri
             for j in range(len(bins)):  # bins in which we try to place the items
                 if i != j:  # check if the two bins are both the same
                     for k, item in enumerate(bins_copy[i]):  # select item to remove
-                        if item[1] <= available_space[j]:  # check if the item can be fit in the new bin
+                        if item[1] <= available_space_copy[j]:  # check if the item can be fit in the new bin
                             bins_copy[j].append(item)
                             available_space_copy[j] -= item[1]
                             available_space_copy[i] += item[1]
