@@ -1,4 +1,5 @@
 import sys
+import copy
 bins_weight = 150
 
 
@@ -6,21 +7,9 @@ def main():
     instance_file = sys.argv[1]
     item_list = infer_file(instance_file)
     bins_1, available_space_1 = assign_bin_1(item_list)
-    bins_2, available_space_2 = assign_bin_2(item_list)
+    #bins_2, available_space_2 = assign_bin_2(item_list)
 
-    bins_old = bins_1.copy()
-    bins_new = None
-    available_space_old = available_space_1.copy()
-    available_space_new = None
-    while bins_old != bins_new:
-        if bins_new:
-            bins_old = bins_new.copy()
-            available_space_old = available_space_new.copy()
-        else:
-            bins_old = bins_1.copy()
-            available_space_old = available_space_1.copy()
-
-        bins_new, available_space_new = n1_lighter(bins_old, available_space_old)
+    bins_new, available_space_new = n1_lighter(bins_1, available_space_1)
 
     print("roba")
 
@@ -28,26 +17,27 @@ def main():
 def n1_lighter(bins, available_space):  # takes the bin which is lighter and tries to eliminate it
     bins.sort(key=sum_bin_weight)
     available_space.sort(reverse=True)
-    bins_copy = bins.copy()
-    available_space_copy = available_space.copy()
+    bins_copy = copy.deepcopy(bins)
+    available_space_copy = copy.deepcopy(available_space)
     for i in range(len(bins)):  # select bin to eliminate
         suitable = True  # bin_to_eliminate can't be emptied
         while bins_copy[i] and suitable:  # until bin is not empty
             for j in range(len(bins)):  # bins in which we try to place the items
-                for k, item in enumerate(bins_copy[i]):  # select item to remove
-                    if i != j and item[1] <= available_space[j]:  # check if the two bins are both the same and if the item can be fit in the new bin
-                        bins_copy[j].append(item)
-                        available_space_copy[j] -= item[1]
-                        available_space_copy[i] += item[1]
-                        bins_copy[i].pop(k)  # remove the item in the old bin
-                if not bins_copy[i]:
-                    break
+                if i != j:  # check if the two bins are both the same
+                    for k, item in enumerate(bins_copy[i]):  # select item to remove
+                        if item[1] <= available_space[j]:  # check if the item can be fit in the new bin
+                            bins_copy[j].append(item)
+                            available_space_copy[j] -= item[1]
+                            available_space_copy[i] += item[1]
+                            bins_copy[i].pop(k)  # remove the item in the old bin
+                    if not bins_copy[i]:
+                        break
             if bins_copy[i]:  # it was not possible to empty bin_to_eliminate
                 suitable = False
-                bins_copy = bins.copy()  # reset the initial bin
-                available_space_copy = available_space.copy()
+                bins_copy = copy.deepcopy(bins)  # reset the initial bin
+                available_space_copy = copy.deepcopy(available_space)
             else:
-                bins_copy.pop(i)
+                bins_copy.pop(i)  # removes the empty list
                 available_space_copy.pop(i)
                 return bins_copy, available_space_copy
     return bins, available_space
