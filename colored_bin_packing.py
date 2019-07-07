@@ -1,27 +1,32 @@
 import sys
 import copy
 import math
+from collections import deque
+
 bins_weight = 150
 
 
 def main():
     instance_file = sys.argv[1]
     item_list = infer_file(instance_file)
-    bins_1, available_space_1 = assign_bin_1(item_list)
-    bins_2, available_space_2 = assign_bin_2(item_list)
-    n2(bins_2, available_space_2)
+    taboo_list = deque(maxlen=10)
+    bins_new, available_space_new = assign_bin_2(item_list)
 
-    for i in range(len(bins_1)):
-        bins_new, available_space_new = n1_lighter(bins_1, available_space_1)
-        bins_1 = copy.deepcopy(bins_new)
-        available_space_1 = copy.deepcopy(available_space_new)
+    while True:
+        bins_old = copy.deepcopy(bins_new)
+        available_space_old = copy.deepcopy(available_space_new)
+        bins_new, available_space_new = copy.deepcopy(n1_lighter(bins_old, available_space_old))
+        if bins_new == bins_old:
+            n2(bins_new, available_space_new, taboo_list)
+            if bins_new == bins_old:
+                break
 
     for i, bin in enumerate(bins_new):
         print(sum(item[1] for item in bin)+available_space_new[i])
 
 
-def n2(bins, available_space):
-    bins.sort(key=sum_bin_weight)  # MAYBE ONLY FIST TIME -> WILL BRING TO THE STARTING POSITION
+def n2(bins, available_space, taboo_list):
+    bins.sort(key=sum_bin_weight)
     available_space.sort(reverse=True)
     for i in range(math.ceil(len(bins)/2)):
         j = len(bins)-i -1  # reverse index (starting from bottom)
@@ -31,7 +36,8 @@ def n2(bins, available_space):
         item_2 = bins[j][len(bins[j])-1]
         color_2 = item_2[2]
         weight_2 = item_2[1]
-        if color_1 == color_2:
+        # swap if the colors are the same and if the items aren't in the tabboo list
+        if color_1 == color_2 and not {item_1[0], item_2[0]} in taboo_list:
             if weight_1 <= (available_space[j] + weight_2) and weight_2 <= (available_space[i] + weight_1):
                 tmp_1 = bins[i].pop(len(bins[i])-1)  # pop the item_1
                 tmp_2 = bins[j].pop(len(bins[j])-1)  # pop the item_2
@@ -39,11 +45,12 @@ def n2(bins, available_space):
                 bins[j].append(tmp_1)
                 available_space[i] += (weight_1 - weight_2)
                 available_space[j] += (weight_2 - weight_1)
-                #IMPLEMENT TABOO LIST
-                break
+                taboo_list.append({item_1[0], item_2[0]})  # insert elements in the taboo list
+                return bins, available_space
+    return bins, available_space
 
 
-def n1_lighter(bins, available_space):  # takes the bin which is lighter and tries to eliminate it
+def n1_lighter(bins, available_space):  # takes the bin which is lighter (the first) and tries to eliminate it
     bins.sort(key=sum_bin_weight)
     available_space.sort(reverse=True)
     bins_copy = copy.deepcopy(bins)
