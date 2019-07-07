@@ -10,7 +10,7 @@ def main():
     instance_file = sys.argv[1]
     item_list = infer_file(instance_file)
     taboo_list = deque(maxlen=10)
-    bins_new, available_space_new = assign_bin_2(item_list)
+    bins_new, available_space_new = assign_bin_1(item_list)
 
     while True:
         bins_old = copy.deepcopy(bins_new)
@@ -60,13 +60,14 @@ def n1_lighter(bins, available_space):  # takes the bin which is lighter (the fi
         while bins_copy[i] and suitable:  # until bin is not empty
             for j in range(len(bins)):  # bins in which we try to place the items
                 if i != j:  # check if the two bins are both the same
-                    for k, item in enumerate(bins_copy[i]):  # select item to remove
+                    bin_to_remove = copy.deepcopy(bins_copy[i])
+                    for item in bin_to_remove:  # select item to remove
                         # check if the item can be fit in the new bin and check if the color of the previous item is different
                         if item[1] <= available_space_copy[j] and item[2] != bins_copy[j][len(bins_copy[j])-1][2]:
                             bins_copy[j].append(item)
                             available_space_copy[j] -= item[1]
                             available_space_copy[i] += item[1]
-                            bins_copy[i].pop(k)  # remove the item in the old bin
+                            bins_copy[i].remove(item)  # remove the item in the old bin
                     if not bins_copy[i]:
                         break
             if bins_copy[i]:  # it was not possible to empty bin_to_eliminate
