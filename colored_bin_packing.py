@@ -36,7 +36,7 @@ def n2(bins, available_space, taboo_list):
         item_2 = bins[j][len(bins[j])-1]
         color_2 = item_2[2]
         weight_2 = item_2[1]
-        # swap if the colors are the same and if the items aren't in the tabboo list
+        # swap if the colors are the same and if the items aren't in the taboo list
         if color_1 == color_2 and not {item_1[0], item_2[0]} in taboo_list:
             if weight_1 <= (available_space[j] + weight_2) and weight_2 <= (available_space[i] + weight_1):
                 tmp_1 = bins[i].pop(len(bins[i])-1)  # pop the item_1

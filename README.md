@@ -11,10 +11,11 @@ Attualmente i file consistono nel numero di item rappresentati dal numero di rig
 I bin hanno una dimensione di 150.
 
 ## Intorni
-* Intorno **N1**: Prendere un bin (con meno elementi o che contiene elem più piccoli) e cercare di sistemare i sui item negli altri bin.
-* Intorno **N2**: Quando N1 non è applicabile (vedi sotto) scambiare 2 item tra due bin diversi.
+* Intorno **N1**: Prendere un bin (**più leggero**, con meno elementi o che contiene elem più piccoli) e cercare di sistemare i sui item negli altri bin.
+* Intorno **N2**: Quando N1 non è applicabile (vedi sotto) scambiare 2 item tra due bin diversi (il primo item del bin più piccolo con il primo item del bin più grosso)
+e poi aumenta l'indice del più piccolo e diminuisce quello del più grande (sono ordinati).
 
-Ovviamente devono essere comunque sempre rispettati i vari vincoli. 
+Ovviamente devono essere comunque sempre rispettati i vari vincoli (peso, colore). 
 
 ## Appunti
 Prima di applicare uno dei due intorni è necessario verificare la situazione in cui ci portano.
@@ -27,6 +28,7 @@ Per l'intorno 2 (swap) scambiare solo l'item più grande con quello più piccolo
 I bin verranno rappresentati con una lista (pro: facile iterare e scambiare elem), dall'esterno faremo in modo da rispettare i vincoli di colore e dimensione del bin.
 gli item all'interno dei bin verranno a loro volta rappresentati con una lista `[indice, peso, colore]`
 
+La taboo list verrà a sua volta con una coda `deque` con lunghezza fissa a 10
 ## How-To
 Il file `color_generator.py` prende in input 3 parametri:
 1) percentuale di numeri negativi (nero)
