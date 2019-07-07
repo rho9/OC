@@ -10,19 +10,31 @@ def main():
     instance_file = sys.argv[1]
     item_list = infer_file(instance_file)
     taboo_list = deque(maxlen=10)
-    bins_new, available_space_new = assign_bin_1(item_list)
+    bins_new, available_space_new = assign_bin_2(item_list)
 
-    while True:
+    print("Number of used bins at the beginning: ", len(bins_new))
+    for bin in bins_new:
+        print(bin)
+
+    while True:  # the horror
         bins_old = copy.deepcopy(bins_new)
         available_space_old = copy.deepcopy(available_space_new)
+        # try to use n1
         bins_new, available_space_new = copy.deepcopy(n1_lighter(bins_old, available_space_old))
+        # if the result is the same as the previous iteration use n2
         if bins_new == bins_old:
             n2(bins_new, available_space_new, taboo_list)
-            if bins_new == bins_old:
+            if bins_new == bins_old:  # if n2 is not applicable -> exit
                 break
-
+    bins_weight_ok = True
     for i, bin in enumerate(bins_new):
-        print(sum(item[1] for item in bin)+available_space_new[i])
+        if sum(item[1] for item in bin)+available_space_new[i] != bins_weight:
+            bins_weight_ok = False
+    print("Weight constraint observed: ", bins_weight_ok)
+
+    print("Number of used bins at the end: ", len(bins_new))
+    for bin in bins_new:
+        print(bin)
 
 
 def n2(bins, available_space, taboo_list):
